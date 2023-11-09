@@ -1,0 +1,118 @@
+{
+  "name": "azure_web_app_traffic_routing_issues",
+  "description": "Azure Web App Traffic Routing Issues refer to problems that can arise in the routing of traffic to and from web applications hosted on the Azure WebApp. These issues can result from a variety of causes, including misconfigurations, DNS problems, or changes in traffic routing. When traffic routing issues occur, they can impact the availability and performance of web applications, potentially leading to downtime or other disruptions. Timely identification and resolution of these issues is critical to ensure that web applications remain accessible and responsive to users.",
+  "params": [
+    {
+      "name": "TRAFFIC_PERCENT",
+      "value": ""
+    },
+    {
+      "name": "WEB_APP_NAME",
+      "value": ""
+    },
+    {
+      "name": "RESOURCE_GROUP_NAME",
+      "value": ""
+    },
+    {
+      "name": "SLOT_NAME",
+      "value": ""
+    },
+    {
+      "name": "DNS_ZONE_NAME",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Azure Web App Traffic Routing Issues\nAzure Web App Traffic Routing Issues refer to problems that can arise in the routing of traffic to and from web applications hosted on the Azure WebApp. These issues can result from a variety of causes, including misconfigurations, DNS problems, or changes in traffic routing. When traffic routing issues occur, they can impact the availability and performance of web applications, potentially leading to downtime or other disruptions. Timely identification and resolution of these issues is critical to ensure that web applications remain accessible and responsive to users."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the Azure Web App"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp show -g ${RESOURCE_GROUP_NAME} -n ${WEB_APP_NAME}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the WebApp's SSL bindings"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp config ssl list --resource-group ${RESOURCE_GROUP_NAME}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check if the web app is using a custom domain name"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp config hostname list --resource-group ${RESOURCE_GROUP_NAME} --webapp-name ${WEB_APP_NAME}`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the Azure DNS service"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az network dns zone show -g ${RESOURCE_GROUP_NAME} -n ${DNS_ZONE_NAME}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the traffic routing settings for the web app"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az webapp traffic-routing show -g ${RESOURCE_GROUP_NAME} -n ${WEB_APP_NAME}`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check and Implement routing rules for deployment slots for web app."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_set_traffic_routing($TRAFFIC_PERCENT, $WEB_APP_NAME, $RESOURCE_GROUP_NAME, $SLOT_NAME)"
+    }
+  ]
+}
